@@ -19,3 +19,8 @@ Router::get('/health', 'App\Controller\HealthController@index');
 Router::get('/favicon.ico', function () {
     return '';
 });
+
+
+Router::get('/test', function () {
+    return 'new test';
+});
