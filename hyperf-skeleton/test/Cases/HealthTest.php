@@ -22,11 +22,15 @@ class HealthTest extends TestCase
 {
     public function testHealthCheckOnlyChecksService(): void
     {
-        // 健康检查目前只验证服务接口可访问，因此期望固定返回 ok。
+        // 健康检查需确认 PhpSpreadsheet 已安装（响应体中带 excel.installed）。
         $this->get('/health')
             ->assertOk()
             ->assertExactJson([
                 'status' => 'ok',
+                'excel' => [
+                    'package' => 'phpoffice/phpspreadsheet',
+                    'installed' => true,
+                ],
             ]);
     }
 }
