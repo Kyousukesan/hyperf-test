@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# 兼容 Jenkins 非交互 ssh 环境
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
+
 # ---------------------------------------------------------------------------
 # 可配置项（按实际环境修改；也可在调用前 export 覆盖默认值）
 # ---------------------------------------------------------------------------
