@@ -17,7 +17,7 @@ SERVICE_NAME="${SERVICE_NAME:-hyperf}"
 NGINX_SERVICE="${NGINX_SERVICE:-nginx}"
 
 # 直连 Hyperf 做健康检查（不经 Nginx，因为重启过程中 Nginx 会停止）
-HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:9501/}"
+HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:9501/health}"
 
 # 老进程优雅退出约 130s，给 restart 留足上限（秒）
 RESTART_TIMEOUT="${RESTART_TIMEOUT:-180}"
