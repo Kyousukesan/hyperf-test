@@ -22,13 +22,17 @@ class HealthTest extends TestCase
 {
     public function testHealthCheckOnlyChecksService(): void
     {
-        // 健康检查需确认 PhpSpreadsheet 已安装（响应体中带 excel.installed）。
+        // 健康检查需确认 PhpSpreadsheet 与 swagger-php 均已安装。
         $this->get('/health')
             ->assertOk()
             ->assertExactJson([
                 'status' => 'ok',
                 'excel' => [
                     'package' => 'phpoffice/phpspreadsheet',
+                    'installed' => true,
+                ],
+                'swagger' => [
+                    'package' => 'zircote/swagger-php',
                     'installed' => true,
                 ],
             ]);

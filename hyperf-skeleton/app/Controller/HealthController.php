@@ -12,29 +12,38 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use OpenApi\Generator as OpenApiGenerator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 class HealthController extends AbstractController
 {
     /**
-     * 健康检查：确认服务可响应，并校验 Excel 相关依赖（PhpSpreadsheet）已安装且可被自动加载。
+     * 健康检查：确认服务可响应，并校验 Excel（PhpSpreadsheet）、OpenAPI 文档（swagger-php）等依赖可被自动加载。
      */
     public function index(): array|PsrResponseInterface
     {
-        // 若 Composer 已安装 phpoffice/phpspreadsheet，则 Spreadsheet 类应存在。
+        // PhpSpreadsheet 核心类存在即表示 phpoffice/phpspreadsheet 已安装。
         $excelInstalled = class_exists(Spreadsheet::class);
+        // swagger-php 的生成器入口类在 OpenApi 命名空间下，存在即表示 zircote/swagger-php 已安装。
+        $swaggerInstalled = class_exists(OpenApiGenerator::class);
+
+        $allDepsOk = $excelInstalled && $swaggerInstalled;
 
         $payload = [
-            'status' => $excelInstalled ? 'ok' : 'error',
+            'status' => $allDepsOk ? 'ok' : 'error',
             'excel' => [
                 'package' => 'phpoffice/phpspreadsheet',
                 'installed' => $excelInstalled,
             ],
+            'swagger' => [
+                'package' => 'zircote/swagger-php',
+                'installed' => $swaggerInstalled,
+            ],
         ];
 
-        // 缺少 Excel 库时返回 503，便于编排/探针区分「进程活着」与「依赖缺失」。
-        if (! $excelInstalled) {
+        // 任一关键依赖缺失时返回 503，便于探针与「仅进程存活」区分。
+        if (! $allDepsOk) {
             return $this->response->json($payload)->withStatus(503);
         }
 
